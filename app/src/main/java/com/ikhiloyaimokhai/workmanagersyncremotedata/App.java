@@ -1,15 +1,18 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata;
 
-import android.app.Activity;
 import android.app.Application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.db.BookDatabase;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.db.dao.BookDao;
+import com.ikhiloyaimokhai.workmanagersyncremotedata.db.entity.Book;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.factory.LiveDataCallAdapterFactory;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.service.BookService;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.util.AppExecutors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -27,6 +30,10 @@ public class App extends Application {
     private static AppExecutors mAppExecutors;
 
     private static BookDao mBookDao;
+
+    private List<Book> mBooks = new ArrayList<>();
+
+    private String mOutputString;
 
 
     public static App get() {
@@ -76,6 +83,13 @@ public class App extends Application {
 
     }
 
+    public String getOutputString() {
+        return mOutputString;
+    }
+
+    public void setOutputString(String outputString) {
+        this.mOutputString = outputString;
+    }
 
     public BookService getBookService() {
         return mBookService;

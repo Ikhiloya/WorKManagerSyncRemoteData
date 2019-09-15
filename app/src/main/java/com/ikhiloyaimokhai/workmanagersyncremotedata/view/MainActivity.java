@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mGetBookButton = findViewById(R.id.getBookBtn);
         mOutputButton = findViewById(R.id.outputButton);
         mCancelButton = findViewById(R.id.cancelButton);
@@ -61,13 +60,14 @@ public class MainActivity extends AppCompatActivity {
         mRemoteSyncViewModel = ViewModelProviders.of(this, factory).get(RemoteSyncViewModel.class);
 
 
-        mGetBookButton.setOnClickListener(view -> {
-                    tv1.setText("");
-                    tv2.setText("");
-                    tv3.setText("");
-                    mRemoteSyncViewModel.fetchData();
-                }
-        );
+//        mGetBookButton.setOnClickListener(view -> {
+//                    tv1.setText("");
+//                    tv2.setText("");
+//                    tv3.setText("");
+//                    mRemoteSyncViewModel.fetchData();
+//                }
+//        );
+        mRemoteSyncViewModel.fetchData();
 
 
         // Show work info, goes inside onCreate()
@@ -81,23 +81,42 @@ public class MainActivity extends AppCompatActivity {
             // We only care about the first output status.
             // Every continuation has only one worker tagged TAG_SYNC_DATA
             WorkInfo workInfo = listOfWorkInfo.get(0);
-
-            boolean finished = workInfo.getState().isFinished();
-            Log.i(TAG, "isFinished: " + finished);
-            if (!finished) {
-                showWorkInProgress();
-            } else {
+            Log.i(TAG, "WorkState: " + workInfo.getState());
+            if (workInfo.getState() == WorkInfo.State.ENQUEUED) {
                 showWorkFinished();
                 Data outputData = workInfo.getOutputData();
 //
                 String outputString = outputData.getString(Constants.KEY_OUTPUT_DATA);
+                System.out.println("+++++++++++++++++STRING" + outputString);
 //
 //                // If there is an output file show "See File" button
-                if (!TextUtils.isEmpty(outputString)) {
-                    mRemoteSyncViewModel.setOutputData(outputString);
+//                if (!TextUtils.isEmpty(outputString)) {
+                    mRemoteSyncViewModel.setOutputData(App.get().getOutputString());
                     mOutputButton.setVisibility(View.VISIBLE);
-                }
+//                }
+            } else {
+                showWorkInProgress();
+
             }
+
+
+//            boolean finished = workInfo.getState().isFinished();
+////            Log.i(TAG, "isFinished: " + finished);
+//            Log.i(TAG, "WorkState: " + workInfo.getState());
+//            if (!finished) {
+//                showWorkInProgress();
+//            } else {
+//                showWorkFinished();
+//                Data outputData = workInfo.getOutputData();
+////
+//                String outputString = outputData.getString(Constants.KEY_OUTPUT_DATA);
+////
+////                // If there is an output file show "See File" button
+//                if (!TextUtils.isEmpty(outputString)) {
+//                    mRemoteSyncViewModel.setOutputData(outputString);
+//                    mOutputButton.setVisibility(View.VISIBLE);
+//                }
+//            }
         });
 
         mCancelButton.setOnClickListener(view -> mRemoteSyncViewModel.cancelWork());
@@ -162,5 +181,6 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar.setVisibility(View.GONE);
         mCancelButton.setVisibility(View.GONE);
         mGetBookButton.setVisibility(View.VISIBLE);
+        mOutputButton.setVisibility(View.VISIBLE);
     }
 }

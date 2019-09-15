@@ -31,8 +31,6 @@ public class SyncDataWorker extends Worker {
     private BookService bookService;
     private BookDao mBookDao;
     private AppExecutors appExecutors;
-    private static final String BASE_URL = "https://4124ce61-915b-4590-879e-21956799abf9.mock.pstmn.io/";
-
     private static final String TAG = SyncDataWorker.class.getSimpleName();
 
     public SyncDataWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
@@ -51,6 +49,7 @@ public class SyncDataWorker extends Worker {
         Context applicationContext = getApplicationContext();
         //simulate slow work
         WorkerUtils.makeStatusNotification("Fetching Data", applicationContext);
+        Log.i(TAG, "Fetching Data from Remote host");
         WorkerUtils.sleep();
 
         try {
@@ -66,6 +65,8 @@ public class SyncDataWorker extends Worker {
                 Data outputData = new Data.Builder()
                         .putString(KEY_OUTPUT_DATA, data)
                         .build();
+
+                App.get().setOutputString(data);
 
                 return Result.success(outputData);
             } else {

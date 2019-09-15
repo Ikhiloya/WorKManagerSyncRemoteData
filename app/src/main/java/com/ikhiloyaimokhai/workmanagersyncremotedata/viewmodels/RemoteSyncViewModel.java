@@ -1,14 +1,14 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata.viewmodels;
 
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
-import androidx.work.ExistingWorkPolicy;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
@@ -20,6 +20,7 @@ import com.ikhiloyaimokhai.workmanagersyncremotedata.workers.WorkerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.ikhiloyaimokhai.workmanagersyncremotedata.util.Constants.SYNC_DATA_WORK_NAME;
 import static com.ikhiloyaimokhai.workmanagersyncremotedata.util.Constants.TAG_SYNC_DATA;
@@ -55,18 +56,20 @@ public class RemoteSyncViewModel extends AndroidViewModel {
                 .build();
 
 
-        OneTimeWorkRequest syncDataWork =
-                new OneTimeWorkRequest.Builder(SyncDataWorker.class)
+        PeriodicWorkRequest periodicSyncDataWork =
+                new PeriodicWorkRequest.Builder(SyncDataWorker.class, 15, TimeUnit.MINUTES)
                         .addTag(TAG_SYNC_DATA)
                         .setConstraints(constraints)
+                        // setting a backoff on case the work needs to retry
+                        .setBackoffCriteria(BackoffPolicy.LINEAR, PeriodicWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
                         .build();
-
-        mWorkManager.enqueueUniqueWork(SYNC_DATA_WORK_NAME, ExistingWorkPolicy.REPLACE, syncDataWork);
+        mWorkManager.enqueueUniquePeriodicWork(SYNC_DATA_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, periodicSyncDataWork);
 
     }
 
 
     public void setOutputData(String outputData) {
+        System.out.println("**********IN HERE***********");
         books = WorkerUtils.fromJson(outputData);
     }
 
