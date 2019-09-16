@@ -1,13 +1,11 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata.view;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
@@ -87,12 +85,11 @@ public class MainActivity extends AppCompatActivity {
                 Data outputData = workInfo.getOutputData();
 //
                 String outputString = outputData.getString(Constants.KEY_OUTPUT_DATA);
-                System.out.println("+++++++++++++++++STRING" + outputString);
 //
 //                // If there is an output file show "See File" button
 //                if (!TextUtils.isEmpty(outputString)) {
-                    mRemoteSyncViewModel.setOutputData(App.get().getOutputString());
-                    mOutputButton.setVisibility(View.VISIBLE);
+                mRemoteSyncViewModel.setOutputData(App.get().getOutputString());
+                mOutputButton.setVisibility(View.VISIBLE);
 //                }
             } else {
                 showWorkInProgress();

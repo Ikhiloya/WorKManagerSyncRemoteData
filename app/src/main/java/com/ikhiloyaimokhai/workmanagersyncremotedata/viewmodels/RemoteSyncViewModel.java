@@ -18,7 +18,6 @@ import com.ikhiloyaimokhai.workmanagersyncremotedata.util.Resource;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.workers.SyncDataWorker;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.workers.WorkerUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +31,7 @@ public class RemoteSyncViewModel extends AndroidViewModel {
     // New instance variable for the WorkInfo
     private LiveData<List<WorkInfo>> mSavedWorkInfo;
 
-    private List<Book> books = new ArrayList<>();
+    private static List<Book> books;
 
     public RemoteSyncViewModel(BookRepository mRepository) {
         super(mRepository.getApplication());

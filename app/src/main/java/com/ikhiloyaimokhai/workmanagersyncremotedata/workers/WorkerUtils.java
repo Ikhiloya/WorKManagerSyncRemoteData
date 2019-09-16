@@ -18,7 +18,9 @@ package com.ikhiloyaimokhai.workmanagersyncremotedata.workers;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
@@ -30,6 +32,7 @@ import com.google.gson.reflect.TypeToken;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.R;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.db.entity.Book;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.util.Constants;
+import com.ikhiloyaimokhai.workmanagersyncremotedata.view.DetailActivity;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -75,13 +78,21 @@ public final class WorkerUtils {
             }
         }
 
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
         // Create the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(Constants.NOTIFICATION_TITLE)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setVibrate(new long[0]);
+                // Set the intent that will fire when the user taps the notification
+                .setContentIntent(pendingIntent)
+                .setVibrate(new long[0])
+                .setAutoCancel(true);
 
         // Show the notification
         NotificationManagerCompat.from(context).notify(Constants.NOTIFICATION_ID, builder.build());

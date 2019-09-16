@@ -48,7 +48,7 @@ public class SyncDataWorker extends Worker {
 
         Context applicationContext = getApplicationContext();
         //simulate slow work
-        WorkerUtils.makeStatusNotification("Fetching Data", applicationContext);
+//        WorkerUtils.makeStatusNotification("Fetching Data", applicationContext);
         Log.i(TAG, "Fetching Data from Remote host");
         WorkerUtils.sleep();
 
@@ -67,6 +67,8 @@ public class SyncDataWorker extends Worker {
                         .build();
 
                 App.get().setOutputString(data);
+
+                WorkerUtils.makeStatusNotification("New Data Available!!", applicationContext);
 
                 return Result.success(outputData);
             } else {
