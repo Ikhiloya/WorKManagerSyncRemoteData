@@ -1,8 +1,6 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata.workers;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,15 +8,11 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.App;
-import com.ikhiloyaimokhai.workmanagersyncremotedata.db.dao.BookDao;
+import com.ikhiloyaimokhai.workmanagersyncremotedata.R;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.db.entity.Book;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.service.BookService;
-import com.ikhiloyaimokhai.workmanagersyncremotedata.util.AppExecutors;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,17 +23,12 @@ import static com.ikhiloyaimokhai.workmanagersyncremotedata.util.Constants.KEY_O
 
 public class SyncDataWorker extends Worker {
     private BookService bookService;
-    private BookDao mBookDao;
-    private AppExecutors appExecutors;
+
     private static final String TAG = SyncDataWorker.class.getSimpleName();
 
     public SyncDataWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
         bookService = App.get().getBookService();
-        mBookDao = App.get().getBookDao();
-        appExecutors = App.get().getExecutors();
-
-
     }
 
     @NonNull
@@ -48,7 +37,7 @@ public class SyncDataWorker extends Worker {
 
         Context applicationContext = getApplicationContext();
         //simulate slow work
-//        WorkerUtils.makeStatusNotification("Fetching Data", applicationContext);
+        // WorkerUtils.makeStatusNotification("Fetching Data", applicationContext);
         Log.i(TAG, "Fetching Data from Remote host");
         WorkerUtils.sleep();
 
@@ -59,7 +48,6 @@ public class SyncDataWorker extends Worker {
             if (response.isSuccessful() && response.body() != null && !response.body().isEmpty() && response.body().size() > 0) {
 
                 String data = WorkerUtils.toJson(response.body());
-
                 Log.i(TAG, "Json String from network " + data);
 
                 Data outputData = new Data.Builder()
@@ -68,7 +56,7 @@ public class SyncDataWorker extends Worker {
 
                 App.get().setOutputString(data);
 
-                WorkerUtils.makeStatusNotification("New Data Available!!", applicationContext);
+                WorkerUtils.makeStatusNotification(applicationContext.getString(R.string.new_data_available), applicationContext);
 
                 return Result.success(outputData);
             } else {

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.ikhiloyaimokhai.workmanagersyncremotedata.App;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.R;
@@ -18,24 +19,38 @@ import com.ikhiloyaimokhai.workmanagersyncremotedata.viewmodels.RemoteSyncViewMo
 import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
-    private RemoteSyncViewModel mRemoteSyncViewModel;
     private static final String TAG = DetailActivity.class.getSimpleName();
-    private BookRepository mRepository;
-    private BookService bookService;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        bookService = App.get().getBookService();
-        mRepository = new BookRepository(getApplication(), DetailActivity.this, bookService, new AppExecutors());
+
+
+        TextView tv = findViewById(R.id.tv);
+        StringBuilder sb = new StringBuilder();
+
+        BookService bookService = App.get().getBookService();
+        BookRepository mRepository = new BookRepository(getApplication(), DetailActivity.this, bookService, new AppExecutors());
         ViewModelFactory factory = new ViewModelFactory(mRepository);
-        mRemoteSyncViewModel = ViewModelProviders.of(this, factory).get(RemoteSyncViewModel.class);
+        RemoteSyncViewModel mRemoteSyncViewModel = ViewModelProviders.of(this, factory).get(RemoteSyncViewModel.class);
 
 
         List<Book> books = mRemoteSyncViewModel.getOutputData();
         Log.i(TAG, "Books: " + books.toString());
+
+        books.forEach((book) ->
+                sb.append(" Title- ")
+                        .append(book.getTitle())
+                        .append(" Genre- ")
+                        .append(book.getGenre())
+                        .append(" Author- ")
+                        .append(book.getAuthor())
+                        .append("\n"));
+
+        tv.setText(sb.toString());
+
 
     }
 }

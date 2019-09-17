@@ -3,4 +3,5 @@
     <string name="cancel">Cancel</string>
     <string name="see_output">See Output</string>
     <string name="get_books">Get Books</string>
+    <string name="new_data_available">New Data Available!!</string>
 </resources>

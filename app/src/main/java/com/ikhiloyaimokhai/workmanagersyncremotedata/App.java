@@ -40,10 +40,6 @@ public class App extends Application {
         return INSTANCE;
     }
 
-//    public static App get(Activity activity) {
-//        return (App) activity.getApplication();
-//    }
-
     @Override
     public void onCreate() {
         super.onCreate();

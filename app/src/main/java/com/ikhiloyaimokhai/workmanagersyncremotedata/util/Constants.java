@@ -18,8 +18,6 @@ package com.ikhiloyaimokhai.workmanagersyncremotedata.util;
 
 public final class Constants {
 
-    // Notification Channel constants
-
     // Name of Notification Channel for verbose notifications of background work
     public static final CharSequence VERBOSE_NOTIFICATION_CHANNEL_NAME =
             "Verbose WorkManager Notifications";

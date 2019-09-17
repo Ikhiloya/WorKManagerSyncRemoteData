@@ -1,34 +1,27 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.work.Data;
 import androidx.work.WorkInfo;
 
 import com.ikhiloyaimokhai.workmanagersyncremotedata.App;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.R;
-import com.ikhiloyaimokhai.workmanagersyncremotedata.db.entity.Book;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.factory.ViewModelFactory;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.repository.BookRepository;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.service.BookService;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.util.AppExecutors;
-import com.ikhiloyaimokhai.workmanagersyncremotedata.util.Constants;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.viewmodels.RemoteSyncViewModel;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private RemoteSyncViewModel mRemoteSyncViewModel;
-    private BookService bookService;
-    private BookRepository mRepository;
     private ProgressBar mProgressBar;
     private Button mCancelButton;
     private Button mOutputButton;
@@ -46,26 +39,14 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progressBar);
 
 
-        TextView tv1 = findViewById(R.id.tv1);
-        TextView tv2 = findViewById(R.id.tv2);
-        TextView tv3 = findViewById(R.id.tv3);
-
-
         // Get the ViewModel
-        bookService = App.get().getBookService();
-        mRepository = new BookRepository(getApplication(), MainActivity.this, bookService, new AppExecutors());
+        BookService bookService = App.get().getBookService();
+        BookRepository mRepository = new BookRepository(getApplication(), MainActivity.this, bookService, new AppExecutors());
         ViewModelFactory factory = new ViewModelFactory(mRepository);
         mRemoteSyncViewModel = ViewModelProviders.of(this, factory).get(RemoteSyncViewModel.class);
 
 
-//        mGetBookButton.setOnClickListener(view -> {
-//                    tv1.setText("");
-//                    tv2.setText("");
-//                    tv3.setText("");
-//                    mRemoteSyncViewModel.fetchData();
-//                }
-//        );
-        mRemoteSyncViewModel.fetchData();
+        mGetBookButton.setOnClickListener(view -> mRemoteSyncViewModel.fetchData());
 
 
         // Show work info, goes inside onCreate()
@@ -82,80 +63,19 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "WorkState: " + workInfo.getState());
             if (workInfo.getState() == WorkInfo.State.ENQUEUED) {
                 showWorkFinished();
-                Data outputData = workInfo.getOutputData();
-//
-                String outputString = outputData.getString(Constants.KEY_OUTPUT_DATA);
-//
-//                // If there is an output file show "See File" button
-//                if (!TextUtils.isEmpty(outputString)) {
+
+                // If there is an output file show "See Output" button
                 mRemoteSyncViewModel.setOutputData(App.get().getOutputString());
                 mOutputButton.setVisibility(View.VISIBLE);
-//                }
             } else {
                 showWorkInProgress();
-
             }
-
-
-//            boolean finished = workInfo.getState().isFinished();
-////            Log.i(TAG, "isFinished: " + finished);
-//            Log.i(TAG, "WorkState: " + workInfo.getState());
-//            if (!finished) {
-//                showWorkInProgress();
-//            } else {
-//                showWorkFinished();
-//                Data outputData = workInfo.getOutputData();
-////
-//                String outputString = outputData.getString(Constants.KEY_OUTPUT_DATA);
-////
-////                // If there is an output file show "See File" button
-//                if (!TextUtils.isEmpty(outputString)) {
-//                    mRemoteSyncViewModel.setOutputData(outputString);
-//                    mOutputButton.setVisibility(View.VISIBLE);
-//                }
-//            }
         });
 
         mCancelButton.setOnClickListener(view -> mRemoteSyncViewModel.cancelWork());
 
         mOutputButton.setOnClickListener(view -> {
-            List<Book> books = mRemoteSyncViewModel.getOutputData();
-            tv1.setText(
-                    new StringBuilder()
-                            .append("Id- ")
-                            .append(books.get(0).getId())
-                            .append(" Title- ")
-                            .append(books.get(0).getTitle())
-                            .append(" Genre- ")
-                            .append(books.get(0).getGenre())
-                            .append(" Author- ")
-                            .append(books.get(0).getAuthor())
-                            .toString());
-
-            tv2.setText(
-                    new StringBuilder()
-                            .append("Id- ")
-                            .append(books.get(1).getId())
-                            .append(" Title- ")
-                            .append(books.get(1).getTitle())
-                            .append(" Genre- ")
-                            .append(books.get(1).getGenre())
-                            .append(" Author- ")
-                            .append(books.get(1).getAuthor())
-                            .toString());
-
-
-            tv3.setText(
-                    new StringBuilder()
-                            .append("Id- ")
-                            .append(books.get(2).getId())
-                            .append(" Title- ")
-                            .append(books.get(2).getTitle())
-                            .append(" Genre- ")
-                            .append(books.get(2).getGenre())
-                            .append(" Author- ")
-                            .append(books.get(2).getAuthor())
-                            .toString());
+            startActivity(new Intent(MainActivity.this, DetailActivity.class));
         });
 
 
