@@ -1,18 +1,19 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkInfo;
 
 import com.ikhiloyaimokhai.workmanagersyncremotedata.App;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.R;
+import com.ikhiloyaimokhai.workmanagersyncremotedata.adapters.BookAdapter;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.factory.ViewModelFactory;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.repository.BookRepository;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.service.BookService;
@@ -23,21 +24,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private RemoteSyncViewModel mRemoteSyncViewModel;
     private ProgressBar mProgressBar;
-    private Button mCancelButton;
-    private Button mOutputButton;
-    private Button mGetBookButton;
+    private BookAdapter mBookAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mGetBookButton = findViewById(R.id.getBookBtn);
-        mOutputButton = findViewById(R.id.outputButton);
-        mCancelButton = findViewById(R.id.cancelButton);
         mProgressBar = findViewById(R.id.progressBar);
-
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Get the ViewModel
         BookService bookService = App.get().getBookService();
@@ -46,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         mRemoteSyncViewModel = ViewModelProviders.of(this, factory).get(RemoteSyncViewModel.class);
 
 
-        mGetBookButton.setOnClickListener(view -> mRemoteSyncViewModel.fetchData());
+        mRemoteSyncViewModel.fetchData();
 
 
         // Show work info, goes inside onCreate()
@@ -63,21 +60,17 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "WorkState: " + workInfo.getState());
             if (workInfo.getState() == WorkInfo.State.ENQUEUED) {
                 showWorkFinished();
+                mRemoteSyncViewModel.getBooks().observe(this, books -> {
+                    mBookAdapter = new BookAdapter(MainActivity.this, books);
+                    recyclerView.setAdapter(mBookAdapter);
 
-                // If there is an output file show "See Output" button
-                mRemoteSyncViewModel.setOutputData(App.get().getOutputString());
-                mOutputButton.setVisibility(View.VISIBLE);
+                });
+
+
             } else {
                 showWorkInProgress();
             }
         });
-
-        mCancelButton.setOnClickListener(view -> mRemoteSyncViewModel.cancelWork());
-
-        mOutputButton.setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, DetailActivity.class));
-        });
-
 
     }
 
@@ -86,9 +79,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private void showWorkInProgress() {
         mProgressBar.setVisibility(View.VISIBLE);
-        mCancelButton.setVisibility(View.VISIBLE);
-        mGetBookButton.setVisibility(View.GONE);
-        mOutputButton.setVisibility(View.GONE);
     }
 
     /**
@@ -96,8 +86,5 @@ public class MainActivity extends AppCompatActivity {
      */
     private void showWorkFinished() {
         mProgressBar.setVisibility(View.GONE);
-        mCancelButton.setVisibility(View.GONE);
-        mGetBookButton.setVisibility(View.VISIBLE);
-        mOutputButton.setVisibility(View.VISIBLE);
     }
 }

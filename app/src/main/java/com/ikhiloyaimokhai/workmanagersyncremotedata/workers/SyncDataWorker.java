@@ -4,12 +4,12 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.ikhiloyaimokhai.workmanagersyncremotedata.App;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.R;
+import com.ikhiloyaimokhai.workmanagersyncremotedata.db.dao.BookDao;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.db.entity.Book;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.service.BookService;
 
@@ -18,17 +18,17 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static com.ikhiloyaimokhai.workmanagersyncremotedata.util.Constants.KEY_OUTPUT_DATA;
-
 
 public class SyncDataWorker extends Worker {
     private BookService bookService;
+    private BookDao bookDao;
 
     private static final String TAG = SyncDataWorker.class.getSimpleName();
 
     public SyncDataWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
         bookService = App.get().getBookService();
+        bookDao = App.get().getBookDao();
     }
 
     @NonNull
@@ -42,6 +42,7 @@ public class SyncDataWorker extends Worker {
         WorkerUtils.sleep();
 
         try {
+            //create a call to network
             Call<List<Book>> call = bookService.fetchBooks();
             Response<List<Book>> response = call.execute();
 
@@ -50,15 +51,14 @@ public class SyncDataWorker extends Worker {
                 String data = WorkerUtils.toJson(response.body());
                 Log.i(TAG, "Json String from network " + data);
 
-                Data outputData = new Data.Builder()
-                        .putString(KEY_OUTPUT_DATA, data)
-                        .build();
+                //delete existing book data
+                bookDao.deleteBooks();
 
-                App.get().setOutputString(data);
+                bookDao.saveBooks(response.body());
 
                 WorkerUtils.makeStatusNotification(applicationContext.getString(R.string.new_data_available), applicationContext);
 
-                return Result.success(outputData);
+                return Result.success();
             } else {
                 return Result.retry();
             }

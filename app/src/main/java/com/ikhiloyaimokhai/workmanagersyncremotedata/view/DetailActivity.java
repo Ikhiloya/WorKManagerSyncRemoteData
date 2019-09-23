@@ -1,6 +1,7 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -35,6 +36,11 @@ public class DetailActivity extends AppCompatActivity {
         BookRepository mRepository = new BookRepository(getApplication(), DetailActivity.this, bookService, new AppExecutors());
         ViewModelFactory factory = new ViewModelFactory(mRepository);
         RemoteSyncViewModel mRemoteSyncViewModel = ViewModelProviders.of(this, factory).get(RemoteSyncViewModel.class);
+
+
+        mRemoteSyncViewModel.getBooks().observe(this, books -> {
+            Log.i(TAG, books.toString());
+        });
 
 
         List<Book> books = mRemoteSyncViewModel.getOutputData();

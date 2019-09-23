@@ -41,6 +41,10 @@ public class BookRepository {
     }
 
 
+    public LiveData<List<Book>> getBooks(){
+        return mBookDao.getBooks();
+    }
+
     public LiveData<Resource<List<Book>>> loadBooks() {
         /**
          * List<Book> is the [ResultType]

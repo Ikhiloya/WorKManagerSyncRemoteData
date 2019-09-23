@@ -31,10 +31,6 @@ public class App extends Application {
 
     private static BookDao mBookDao;
 
-    private List<Book> mBooks = new ArrayList<>();
-
-    private String mOutputString;
-
 
     public static App get() {
         return INSTANCE;
@@ -77,14 +73,6 @@ public class App extends Application {
         mBookDao = BookDatabase.getDatabase(getApplicationContext()).bookDao();
 
 
-    }
-
-    public String getOutputString() {
-        return mOutputString;
-    }
-
-    public void setOutputString(String outputString) {
-        this.mOutputString = outputString;
     }
 
     public BookService getBookService() {

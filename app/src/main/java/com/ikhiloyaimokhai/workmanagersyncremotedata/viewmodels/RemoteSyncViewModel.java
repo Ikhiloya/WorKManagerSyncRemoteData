@@ -38,14 +38,11 @@ public class RemoteSyncViewModel extends AndroidViewModel {
         this.mRepository = mRepository;
         mWorkManager = WorkManager.getInstance(mRepository.getApplication());
         mSavedWorkInfo = mWorkManager.getWorkInfosByTagLiveData(TAG_SYNC_DATA);
-
     }
-
 
     public LiveData<Resource<List<Book>>> loadBooks() {
         return mRepository.loadBooks();
     }
-
 
     public void fetchData() {
 
@@ -62,16 +59,21 @@ public class RemoteSyncViewModel extends AndroidViewModel {
                         // setting a backoff on case the work needs to retry
                         .setBackoffCriteria(BackoffPolicy.LINEAR, PeriodicWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
                         .build();
-        mWorkManager.enqueueUniquePeriodicWork(SYNC_DATA_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, periodicSyncDataWork);
+        mWorkManager.enqueueUniquePeriodicWork(
+                SYNC_DATA_WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP, //Existing Periodic Work policy
+                periodicSyncDataWork //work request
+        );
 
     }
 
+    public LiveData<List<Book>> getBooks() {
+        return mRepository.getBooks();
+    }
 
     public void setOutputData(String outputData) {
-        System.out.println("**********IN HERE***********");
         books = WorkerUtils.fromJson(outputData);
     }
-
 
     public List<Book> getOutputData() {
         return books;
@@ -89,6 +91,4 @@ public class RemoteSyncViewModel extends AndroidViewModel {
         Log.i("VIEWMODEL", "Cancelling work");
         mWorkManager.cancelUniqueWork(SYNC_DATA_WORK_NAME);
     }
-
-
 }
