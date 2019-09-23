@@ -61,4 +61,8 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
+    // https://mvnrepository.com/artifact/androidx.cardview/cardview
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+
 }
