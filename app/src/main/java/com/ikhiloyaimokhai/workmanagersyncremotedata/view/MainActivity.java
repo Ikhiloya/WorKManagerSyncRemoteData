@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "WorkState: " + workInfo.getState());
             if (workInfo.getState() == WorkInfo.State.ENQUEUED) {
                 showWorkFinished();
+
+                //observe Room db
                 mRemoteSyncViewModel.getBooks().observe(this, books -> {
                     mBookAdapter = new BookAdapter(MainActivity.this, books);
                     recyclerView.setAdapter(mBookAdapter);
@@ -74,16 +76,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Shows and hides views for when the Activity is processing an image
-     */
     private void showWorkInProgress() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Shows and hides views for when the Activity is done processing an image
-     */
     private void showWorkFinished() {
         mProgressBar.setVisibility(View.GONE);
     }

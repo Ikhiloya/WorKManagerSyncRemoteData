@@ -1,12 +1,11 @@
 package com.ikhiloyaimokhai.workmanagersyncremotedata.view;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.ikhiloyaimokhai.workmanagersyncremotedata.App;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.R;

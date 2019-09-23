@@ -32,7 +32,6 @@ import com.google.gson.reflect.TypeToken;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.R;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.db.entity.Book;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.util.Constants;
-import com.ikhiloyaimokhai.workmanagersyncremotedata.view.DetailActivity;
 import com.ikhiloyaimokhai.workmanagersyncremotedata.view.MainActivity;
 
 import java.lang.reflect.Type;
